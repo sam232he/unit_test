@@ -1,0 +1,724 @@
+/**
+ * @file    canfd_mcp2518_cdefines.h
+ *
+ * @author  allahmoradi
+ *
+ * @date    Jun 27, 2024 (date of creation)
+ *
+ * @ingroup SOURCE APP
+ *
+ * @prefix  canfd_mcp2518_cdefines
+ *
+ * @brief   
+ *
+ * @details 
+ *
+ */
+
+
+#ifndef INCLUDE_BMODULE_DRIVER_LIB_MCP2518_MCP2518_MCP2518_DEFINES_H_
+#define INCLUDE_BMODULE_DRIVER_LIB_MCP2518_MCP2518_MCP2518_DEFINES_H_
+/*================== Includes ===============================================*/
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+//#include <stdlib.h>
+/*================== Macros and Definitions =================================*/
+
+#define MAX_MSG_SIZE 76U
+#define MAX_DLC_SIZE 8U
+
+#define MCP2518_NORMAL_MODE 0x00U
+#define MCP2518_SLEEP_MODE 0x01U
+#define MCP2518_INTERNAL_LOOPBACK_MODE 0x02U
+#define MCP2518_LISTEN_ONLY_MODE 0x03U
+#define MCP2518_CONFIGURATION_MODE 0x04U
+#define MCP2518_EXTERNAL_LOOPBACK_MODE 0x05U
+#define MCP2518_CLASSIC_MODE 0x06U
+#define MCP2518_RESTRICTED_MODE 0x07U
+#define MCP2518_INVALID_MODE 0xFFU
+
+#define MCP2518_CAN_FIFO_TOTAL_CHANNELS 32
+
+
+//! FIFO Payload Size
+
+typedef enum {
+    MCP2518_CAN_PLSIZE_8,
+    MCP2518_CAN_PLSIZE_12,
+    MCP2518_CAN_PLSIZE_16,
+    MCP2518_CAN_PLSIZE_20,
+    MCP2518_CAN_PLSIZE_24,
+    MCP2518_CAN_PLSIZE_32,
+    MCP2518_CAN_PLSIZE_48,
+    MCP2518_CAN_PLSIZE_64
+} MCP2518_FIFO_PLSIZE_e;
+
+
+//! CAN Configure
+
+typedef struct _MCP2518_CONFIG {
+    uint16_t DNetFilterCount : 5;
+    uint16_t IsoCrcEnable : 1;
+    uint16_t ProtocolExpectionEventDisable : 1;
+    uint16_t WakeUpFilterEnable : 1;
+    uint16_t WakeUpFilterTime : 2;
+    uint16_t BitRateSwitchDisable : 1;
+    uint16_t RestrictReTxAttempts : 1;
+    uint16_t EsiInGatewayMode : 1;
+    uint16_t SystemErrorToListenOnly : 1;
+    uint16_t StoreInTEF : 1;
+    uint16_t TXQEnable : 1;
+    uint16_t TxBandWidthSharing : 4;
+} MCP2518_CAN_CONFIG_s;
+
+//! CAN Transmit Channel Configure
+
+typedef struct _MCP2518_TX_FIFO_CONFIG {
+    uint16_t RTREnable : 1;
+    uint16_t TxPriority : 5;
+    uint16_t TxAttempts : 2;
+    uint16_t FifoSize : 5;
+    uint16_t PayLoadSize : 3;
+} MCP2518_TX_FIFO_CONFIG_s;
+
+//! CAN Transmit Queue Configure
+
+typedef struct _MCP2518_TX_QUEUE_CONFIG {
+    uint32_t TxPriority : 5;
+    uint32_t TxAttempts : 2;
+    uint32_t FifoSize : 5;
+    uint32_t PayLoadSize : 3;
+} MCP2518_TX_QUEUE_CONFIG_s;
+
+//! CAN Receive Channel Configure
+
+typedef struct _MCP2518_RX_FIFO_CONFIG {
+    uint16_t RxTimeStampEnable : 1;
+    uint16_t FifoSize : 5;
+    uint16_t PayLoadSize : 3;
+} MCP2518_RX_FIFO_CONFIG_s;
+
+//! CAN Transmit Event FIFO Configure
+
+typedef struct _MCP2518_TEF_CONFIG {
+    uint32_t TimeStampEnable : 1;
+    uint32_t FifoSize : 5;
+} MCP2518_TEF_CONFIG_s;
+
+/* CAN Message Objects */
+
+//! CAN Message Object ID
+
+typedef struct _MCP2518_MSGOBJ_ID {
+    uint32_t SID : 11;
+    uint32_t EID : 18;
+    uint32_t SID11 : 1;
+    uint32_t unimplemented1 : 2;
+} MCP2518_CAN_MSGOBJ_ID_s;
+
+//! CAN Data Length Code
+
+typedef enum {
+    CANFD_DLC_0,
+    CANFD_DLC_1,
+    CANFD_DLC_2,
+    CANFD_DLC_3,
+    CANFD_DLC_4,
+    CANFD_DLC_5,
+    CANFD_DLC_6,
+    CANFD_DLC_7,
+    CANFD_DLC_8,
+    CANFD_DLC_12,
+    CANFD_DLC_16,
+    CANFD_DLC_20,
+    CANFD_DLC_24,
+    CANFD_DLC_32,
+    CANFD_DLC_48,
+    CANFD_DLC_64
+} MCP2518_CANFD_DLC_e;
+
+//! CAN TX Message Object Control
+
+typedef struct _MCP2518_TX_MSGOBJ_CTRL {
+    uint32_t DLC : 4;
+    uint32_t IDE : 1;
+    uint32_t RTR : 1;
+    uint32_t BRS : 1;
+    uint32_t FDF : 1;
+    uint32_t ESI : 1;
+#ifdef MCP2517FD
+    uint32_t SEQ : 7;
+    uint32_t unimplemented1 : 16;
+#else
+    uint32_t SEQ : 23;
+#endif
+} MCP2518_CAN_TX_MSGOBJ_CTRL_s;
+
+//! CAN RX Message Object Control
+
+typedef struct _MCP2518_RX_MSGOBJ_CTRL {
+    uint32_t DLC : 4;
+    uint32_t IDE : 1;
+    uint32_t RTR : 1;
+    uint32_t BRS : 1;
+    uint32_t FDF : 1;
+    uint32_t ESI : 1;
+    uint32_t unimplemented1 : 2;
+    uint32_t FilterHit : 5;
+    uint32_t unimplemented2 : 16;
+} MCP2518_CAN_RX_MSGOBJ_CTRL_s;
+
+//! CAN Message Time Stamp
+typedef uint32_t MCP2518_MSG_TIMESTAMP;
+
+//! CAN TX Message Object
+
+typedef union _MCP2518_TX_MSGOBJ {
+
+    struct {
+        MCP2518_CAN_MSGOBJ_ID_s id;
+        MCP2518_CAN_TX_MSGOBJ_CTRL_s ctrl;
+        MCP2518_MSG_TIMESTAMP timeStamp;
+    } bF;
+    uint32_t word[3];
+} MCP2518_CAN_TX_MSGOBJ;
+
+//! CAN RX Message Object
+
+typedef union _MCP2518_RX_MSGOBJ {
+
+    struct {
+        MCP2518_CAN_MSGOBJ_ID_s id;
+        MCP2518_CAN_RX_MSGOBJ_CTRL_s ctrl;
+        MCP2518_MSG_TIMESTAMP timeStamp;
+    } bF;
+    uint32_t word[3];
+} MCP2518_CAN_RX_MSGOBJ;
+
+//! CAN TEF Message Object
+
+typedef union _MCP2518_TEF_MSGOBJ {
+
+    struct {
+        MCP2518_CAN_MSGOBJ_ID_s id;
+        MCP2518_CAN_TX_MSGOBJ_CTRL_s ctrl;
+        MCP2518_MSG_TIMESTAMP timeStamp;
+    } bF;
+    uint32_t word[3];
+} CAN_TEF_MSGOBJ;
+
+//! CAN Filter Object ID
+
+typedef struct _MCP2518_FILTEROBJ_ID {
+    uint32_t SID : 11;
+    uint32_t EID : 18;
+    uint32_t SID11 : 1;
+    uint32_t EXIDE : 1;
+    uint32_t unimplemented1 : 1;
+} MCP2518_CAN_FILTEROBJ_ID_s;
+
+//! CAN Mask Object ID
+
+typedef struct _MCP2518_MASKOBJ_ID {
+    uint32_t MSID : 11;
+    uint32_t MEID : 18;
+    uint32_t MSID11 : 1;
+    uint32_t MIDE : 1;
+    uint32_t unimplemented1 : 1;
+} MCP2518_CAN_MASKOBJ_ID_s;
+
+//! CAN RX FIFO Status
+
+typedef enum {
+    MCP2518_CAN_RX_FIFO_EMPTY = 0,
+    MCP2518_CAN_RX_FIFO_STATUS_MASK = 0x0F,
+    MCP2518_CAN_RX_FIFO_NOT_EMPTY = 0x01,
+    MCP2518_CAN_RX_FIFO_HALF_FULL = 0x02,
+    MCP2518_CAN_RX_FIFO_FULL = 0x04,
+    MCP2518_CAN_RX_FIFO_OVERFLOW = 0x08
+} MCP2518_CAN_RX_FIFO_STATUS_e;
+
+//! CAN TX FIFO Status
+
+typedef enum {
+    MCP2518_CAN_TX_FIFO_FULL = 0,
+    MCP2518_CAN_TX_FIFO_STATUS_MASK = 0x1F7,
+    MCP2518_CAN_TX_FIFO_NOT_FULL = 0x01,
+    MCP2518_CAN_TX_FIFO_HALF_FULL = 0x02,
+    MCP2518_CAN_TX_FIFO_EMPTY = 0x04,
+    MCP2518_CAN_TX_FIFO_ATTEMPTS_EXHAUSTED = 0x10,
+    MCP2518_CAN_TX_FIFO_ERROR = 0x20,
+    MCP2518_CAN_TX_FIFO_ARBITRATION_LOST = 0x40,
+    MCP2518_CAN_TX_FIFO_ABORTED = 0x80,
+    MCP2518_CAN_TX_FIFO_TRANSMITTING = 0x100
+} MCP2518_CAN_TX_FIFO_STATUS_e;
+
+//! CAN TEF FIFO Status
+
+typedef enum {
+    MCP2518_TEF_FIFO_EMPTY = 0,
+    MCP2518_TEF_FIFO_STATUS_MASK = 0x0F,
+    MCP2518_TEF_FIFO_NOT_EMPTY = 0x01,
+    MCP2518_TEF_FIFO_HALF_FULL = 0x02,
+    MCP2518_TEF_FIFO_FULL = 0x04,
+    MCP2518_TEF_FIFO_OVERFLOW = 0x08
+} MCP2518_TEF_FIFO_STATUS_e;
+
+//! CAN Module Event (Interrupts)
+
+typedef enum {
+    MCP2518_CAN_NO_EVENT = 0,
+    MCP2518_CAN_ALL_EVENTS = 0xFF1F,
+    MCP2518_CAN_TX_EVENT = 0x0001,
+    MCP2518_CAN_RX_EVENT = 0x0002,
+    MCP2518_CAN_TIME_BASE_COUNTER_EVENT = 0x0004,
+    MCP2518_CAN_OPERATION_MODE_CHANGE_EVENT = 0x0008,
+    MCP2518_CAN_TEF_EVENT = 0x0010,
+
+    MCP2518_CAN_RAM_ECC_EVENT = 0x0100,
+    MCP2518_CAN_SPI_CRC_EVENT = 0x0200,
+    MCP2518_CAN_TX_ATTEMPTS_EVENT = 0x0400,
+    MCP2518_CAN_RX_OVERFLOW_EVENT = 0x0800,
+    MCP2518_CAN_SYSTEM_ERROR_EVENT = 0x1000,
+    MCP2518_CAN_BUS_ERROR_EVENT = 0x2000,
+    MCP2518_CAN_BUS_WAKEUP_EVENT = 0x4000,
+    MCP2518_CAN_RX_INVALID_MESSAGE_EVENT = 0x8000
+} MCP2518_MODULE_EVENT_e;
+
+//! CAN TX FIFO Event (Interrupts)
+
+#define MCP2518_CAN_TX_FIFO_NO_EVENT  0U
+#define MCP2518_CAN_TX_FIFO_ALL_EVENTS  0x17U
+#define MCP2518_CAN_TX_FIFO_NOT_FULL_EVENT  0x01U
+#define MCP2518_CAN_TX_FIFO_HALF_FULL_EVENT  0x02U
+#define MCP2518_CAN_TX_FIFO_EMPTY_EVENT  0x04U
+#define MCP2518_CAN_TX_FIFO_ATTEMPTS_EXHAUSTED_EVENT  0x10U
+
+
+#define MCP2518_CAN_RX_FIFO_NO_EVENT  0U
+#define MCP2518_CAN_RX_FIFO_ALL_EVENTS  0x0FU
+#define MCP2518_CAN_RX_FIFO_HALF_FULL_EVENT  0x02U
+#define MCP2518_CAN_RX_FIFO_NOT_EMPTY_EVENT  0x01U
+#define MCP2518_CAN_RX_FIFO_FULL_EVENT  0x04U
+#define MCP2518_CAN_RX_FIFO_OVERFLOW_EVENT  0x08U
+
+//! CAN TEF FIFO Event (Interrupts)
+
+typedef enum {
+    MCP2518_TEF_FIFO_NO_EVENT = 0U,
+    MCP2518_TEF_FIFO_ALL_EVENTS = 0x0FU,
+    MCP2518_TEF_FIFO_NOT_EMPTY_EVENT = 0x01U,
+    MCP2518_TEF_FIFO_HALF_FULL_EVENT = 0x02U,
+    MCP2518_TEF_FIFO_FULL_EVENT = 0x04U,
+    MCP2518_TEF_FIFO_OVERFLOW_EVENT = 0x08U
+} MCP2518_TEF_FIFO_EVENT_e;
+
+//! CAN Bit Time Setup: Arbitration/Data Bit Phase
+
+typedef enum {
+    CAN_500K_1M, // 0x00
+    CAN_500K_2M, // 0x01
+    CAN_500K_3M,
+    CAN_500K_4M,
+    CAN_500K_5M, // 0x04
+    CAN_500K_6M7,
+    CAN_500K_8M, // 0x06
+    CAN_500K_10M,
+    CAN_250K_500K, // 0x08
+    CAN_250K_833K,
+    CAN_250K_1M,
+    CAN_250K_1M5,
+    CAN_250K_2M,
+    CAN_250K_3M,
+    CAN_250K_4M,
+    CAN_1000K_4M, // 0x0f
+    CAN_1000K_8M,
+    CAN_125K_500K // 0x11
+} MCP2518_BITTIME_SETUP_e;
+
+//! CAN Nominal Bit Time Setup
+
+typedef enum {
+    MCP2518_NBT_125K,
+    MCP2518_NBT_250K,
+    MCP2518_NBT_500K,
+    MCP2518_NBT_1M
+} MCP2518_NOMINAL_BITTIME_SETUP_e;
+
+//! CAN Data Bit Time Setup
+
+typedef enum {
+    MCP2518_DBT_500K,
+    MCP2518_DBT_833K,
+    MCP2518_DBT_1M,
+    MCP2518_DBT_1M5,
+    MCP2518_DBT_2M,
+    MCP2518_DBT_3M,
+    MCP2518_DBT_4M,
+    MCP2518_DBT_5M,
+    MCP2518_DBT_6M7,
+    MCP2518_DBT_8M,
+    MCP2518_DBT_10M
+} MCP2518_DATA_BITTIME_SETUP_e;
+
+//! Secondary Sample Point Mode
+
+#define MCP2518_SSP_MODE_OFF 0
+#define MCP2518_SSP_MODE_MANUAL 1
+#define MCP2518_SSP_MODE_AUTO 2
+
+//! CAN Error State
+
+#define MCP2518_CAN_ERROR_FREE_STATE  0U
+#define MCP2518_CAN_ERROR_ALL  0x3FU
+#define MCP2518_CAN_TX_RX_WARNING_STATE  0x01U
+#define MCP2518_CAN_RX_WARNING_STATE  0x02U
+#define MCP2518_CAN_TX_WARNING_STATE  0x04U
+#define MCP2518_CAN_RX_BUS_PASSIVE_STATE  0x08U
+#define MCP2518_CAN_TX_BUS_PASSIVE_STATE  0x10U
+#define MCP2518_CAN_TX_BUS_OFF_STATE  0x20U
+#define MCP2518_CAN_TX_ERR_FIFO_FULL  0x40U
+
+//! CAN Time Stamp Mode Select
+
+typedef enum {
+    MCP2518_TS_SOF = 0x00,
+    MCP2518_TS_EOF = 0x01,
+    MCP2518_TS_RES = 0x02
+} MCP2518_TS_MODE_e;
+
+//! CAN ECC EVENT
+
+typedef enum {
+    MCP2518_ECC_NO_EVENT = 0x00,
+    MCP2518_ECC_ALL_EVENTS = 0x06,
+    MCP2518_ECC_SEC_EVENT = 0x02,
+    MCP2518_ECC_DED_EVENT = 0x04
+} MCP2518_ECC_EVENT_e;
+
+//! CAN CRC EVENT
+
+typedef enum {
+    MCP2518_CRC_NO_EVENT = 0x00,
+    MCP2518_CRC_ALL_EVENTS = 0x03,
+    MCP2518_CRC_CRCERR_EVENT = 0x01,
+    MCP2518_CRC_FORMERR_EVENT = 0x02
+} MCP2518_CRC_EVENT_e;
+
+//! GPIO Pin Position
+
+typedef enum {
+    MCP2518_GPIO_PIN_0,
+    MCP2518_GPIO_PIN_1
+} MCP2518_GPIO_PIN_POS_e;
+
+//! GPIO Pin Modes
+
+typedef enum {
+    MCP2518_GPIO_MODE_INT,
+    MCP2518_GPIO_MODE_GPIO
+} MCP2518_GPIO_PIN_MODE_e;
+
+//! GPIO Pin Directions
+
+typedef enum {
+    MCP2518_GPIO_OUTPUT,
+    MCP2518_GPIO_INPUT
+} MCP2518_GPIO_PIN_DIRECTION_e;
+
+//! GPIO Open Drain Mode
+
+typedef enum {
+    MCP2518_GPIO_PUSH_PULL,
+    MCP2518_GPIO_OPEN_DRAIN
+} MCP2518_GPIO_OPEN_DRAIN_MODE_e;
+
+//! GPIO Pin State
+
+typedef enum {
+    MCP2518_GPIO_LOW,
+    MCP2518_GPIO_HIGH
+} MCP2518_GPIO_PIN_STATE_e;
+
+//! Clock Output Mode
+
+typedef enum {
+    MCP2518_GPIO_CLKO_CLOCK,
+    MCP2518_GPIO_CLKO_SOF
+} MCP2518_GPIO_CLKO_MODE_e;
+
+//! CAN Bus Diagnostic flags
+
+typedef struct _MCP2518_BUS_DIAG_FLAGS {
+    uint32_t NBIT0_ERR : 1;
+    uint32_t NBIT1_ERR : 1;
+    uint32_t NACK_ERR : 1;
+    uint32_t NFORM_ERR : 1;
+    uint32_t NSTUFF_ERR : 1;
+    uint32_t NCRC_ERR : 1;
+    uint32_t unimplemented1 : 1;
+    uint32_t TXBO_ERR : 1;
+    uint32_t DBIT0_ERR : 1;
+    uint32_t DBIT1_ERR : 1;
+    uint32_t unimplemented2 : 1;
+    uint32_t DFORM_ERR : 1;
+    uint32_t DSTUFF_ERR : 1;
+    uint32_t DCRC_ERR : 1;
+    uint32_t ESI : 1;
+    uint32_t DLC_MISMATCH : 1;
+} MCP2518_BUS_DIAG_FLAGS_s;
+
+//! CAN Bus Diagnostic Error Counts
+
+typedef struct _MCP2518_BUS_ERROR_COUNT {
+    uint16_t NREC;
+    uint16_t NTEC;
+    uint16_t DREC;
+    uint16_t DTEC;
+} MCP2518_BUS_ERROR_COUNT_s;
+
+//! CAN BUS DIAGNOSTICS
+
+typedef union _MCP2518_BUS_DIAGNOSTIC {
+
+    struct {
+        MCP2518_BUS_ERROR_COUNT_s errorCount;
+        uint16_t errorFreeMsgCount;
+        MCP2518_BUS_DIAG_FLAGS_s flag;
+    } bF;
+    uint32_t word[2];
+} MCP2518_BUS_DIAGNOSTIC;
+
+//! TXREQ Channel Bits
+// Multiple channels can be or'ed together
+
+typedef enum {
+    MCP2518_TXREQ_CH0 = 0x00000001,
+    MCP2518_TXREQ_CH1 = 0x00000002,
+    MCP2518_TXREQ_CH2 = 0x00000004,
+    MCP2518_TXREQ_CH3 = 0x00000008,
+    MCP2518_TXREQ_CH4 = 0x00000010,
+    MCP2518_TXREQ_CH5 = 0x00000020,
+    MCP2518_TXREQ_CH6 = 0x00000040,
+    MCP2518_TXREQ_CH7 = 0x00000080,
+
+    MCP2518_TXREQ_CH8 = 0x00000100,
+    MCP2518_TXREQ_CH9 = 0x00000200,
+    MCP2518_TXREQ_CH10 = 0x00000400,
+    MCP2518_TXREQ_CH11 = 0x00000800,
+    MCP2518_TXREQ_CH12 = 0x00001000,
+    MCP2518_TXREQ_CH13 = 0x00002000,
+    MCP2518_TXREQ_CH14 = 0x00004000,
+    MCP2518_TXREQ_CH15 = 0x00008000,
+
+    MCP2518_TXREQ_CH16 = 0x00010000,
+    MCP2518_TXREQ_CH17 = 0x00020000,
+    MCP2518_TXREQ_CH18 = 0x00040000,
+    MCP2518_TXREQ_CH19 = 0x00080000,
+    MCP2518_TXREQ_CH20 = 0x00100000,
+    MCP2518_TXREQ_CH21 = 0x00200000,
+    MCP2518_TXREQ_CH22 = 0x00400000,
+    MCP2518_TXREQ_CH23 = 0x00800000,
+
+    MCP2518_TXREQ_CH24 = 0x01000000,
+    MCP2518_TXREQ_CH25 = 0x02000000,
+    MCP2518_TXREQ_CH26 = 0x04000000,
+    MCP2518_TXREQ_CH27 = 0x08000000,
+    MCP2518_TXREQ_CH28 = 0x10000000,
+    MCP2518_TXREQ_CH29 = 0x20000000,
+    MCP2518_TXREQ_CH30 = 0x40000000,
+    MCP2518_TXREQ_CH31 = 0x80000000
+} MCP2518_TXREQ_CHANNEL_e;
+
+//! Oscillator Control
+
+typedef struct _MCP2518_OSC_CTRL {
+    uint32_t PllEnable : 1;
+    uint32_t OscDisable : 1;
+    uint32_t SclkDivide : 1;
+    uint32_t ClkOutDivide : 2;
+    uint32_t LowPowerModeEnable : 1;
+} MCP2518_OSC_CTRL_s;
+
+//! Oscillator Status
+
+typedef struct _MCP2518_OSC_STATUS {
+    uint32_t PllReady : 1;
+    uint32_t OscReady : 1;
+    uint32_t SclkReady : 1;
+} MCP2518_OSC_STATUS_s;
+
+//! ICODE
+
+typedef enum {
+    MCP2518_ICODE_FIFO_CH0,
+    MCP2518_ICODE_FIFO_CH1,
+    MCP2518_ICODE_FIFO_CH2,
+    MCP2518_ICODE_FIFO_CH3,
+    MCP2518_ICODE_FIFO_CH4,
+    MCP2518_ICODE_FIFO_CH5,
+    MCP2518_ICODE_FIFO_CH6,
+    MCP2518_ICODE_FIFO_CH7,
+    MCP2518_ICODE_FIFO_CH8,
+    MCP2518_ICODE_FIFO_CH9,
+    MCP2518_ICODE_FIFO_CH10,
+    MCP2518_ICODE_FIFO_CH11,
+    MCP2518_ICODE_FIFO_CH12,
+    MCP2518_ICODE_FIFO_CH13,
+    MCP2518_ICODE_FIFO_CH14,
+    MCP2518_ICODE_FIFO_CH15,
+    MCP2518_ICODE_FIFO_CH16,
+    MCP2518_ICODE_FIFO_CH17,
+    MCP2518_ICODE_FIFO_CH18,
+    MCP2518_ICODE_FIFO_CH19,
+    MCP2518_ICODE_FIFO_CH20,
+    MCP2518_ICODE_FIFO_CH21,
+    MCP2518_ICODE_FIFO_CH22,
+    MCP2518_ICODE_FIFO_CH23,
+    MCP2518_ICODE_FIFO_CH24,
+    MCP2518_ICODE_FIFO_CH25,
+    MCP2518_ICODE_FIFO_CH26,
+    MCP2518_ICODE_FIFO_CH27,
+    MCP2518_ICODE_FIFO_CH28,
+    MCP2518_ICODE_FIFO_CH29,
+    MCP2518_ICODE_FIFO_CH30,
+    MCP2518_ICODE_FIFO_CH31,
+    MCP2518_ICODE_TOTAL_CHANNELS,
+    MCP2518_ICODE_NO_INT = 0x40,
+    MCP2518_ICODE_CERRIF,
+    MCP2518_ICODE_WAKIF,
+    MCP2518_ICODE_RXOVIF,
+    MCP2518_ICODE_ADDRERR_SERRIF,
+    MCP2518_ICODE_MABOV_SERRIF,
+    MCP2518_ICODE_TBCIF,
+    MCP2518_ICODE_MODIF,
+    MCP2518_ICODE_IVMIF,
+    MCP2518_ICODE_TEFIF,
+    MCP2518_ICODE_TXATIF,
+    MCP2518_ICODE_RESERVED
+} MCP2518_ICODE_e;
+
+//! RXCODE
+
+typedef enum {
+    MCP2518_RXCODE_FIFO_CH1=1,
+    MCP2518_RXCODE_FIFO_CH2,
+    MCP2518_RXCODE_FIFO_CH3,
+    MCP2518_RXCODE_FIFO_CH4,
+    MCP2518_RXCODE_FIFO_CH5,
+    MCP2518_RXCODE_FIFO_CH6,
+    MCP2518_RXCODE_FIFO_CH7,
+    MCP2518_RXCODE_FIFO_CH8,
+    MCP2518_RXCODE_FIFO_CH9,
+    MCP2518_RXCODE_FIFO_CH10,
+    MCP2518_RXCODE_FIFO_CH11,
+    MCP2518_RXCODE_FIFO_CH12,
+    MCP2518_RXCODE_FIFO_CH13,
+    MCP2518_RXCODE_FIFO_CH14,
+    MCP2518_RXCODE_FIFO_CH15,
+    MCP2518_RXCODE_FIFO_CH16,
+    MCP2518_RXCODE_FIFO_CH17,
+    MCP2518_RXCODE_FIFO_CH18,
+    MCP2518_RXCODE_FIFO_CH19,
+    MCP2518_RXCODE_FIFO_CH20,
+    MCP2518_RXCODE_FIFO_CH21,
+    MCP2518_RXCODE_FIFO_CH22,
+    MCP2518_RXCODE_FIFO_CH23,
+    MCP2518_RXCODE_FIFO_CH24,
+    MCP2518_RXCODE_FIFO_CH25,
+    MCP2518_RXCODE_FIFO_CH26,
+    MCP2518_RXCODE_FIFO_CH27,
+    MCP2518_RXCODE_FIFO_CH28,
+    MCP2518_RXCODE_FIFO_CH29,
+    MCP2518_RXCODE_FIFO_CH30,
+    MCP2518_RXCODE_FIFO_CH31,
+    MCP2518_RXCODE_TOTAL_CHANNELS,
+    MCP2518_RXCODE_NO_INT = 0x40,
+    MCP2518_RXCODE_RESERVED
+} MCP2518_RXCODE_e;
+
+//! TXCODE
+
+typedef enum {
+    MCP2518_TXCODE_FIFO_CH0,
+    MCP2518_TXCODE_FIFO_CH1,
+    MCP2518_TXCODE_FIFO_CH2,
+    MCP2518_TXCODE_FIFO_CH3,
+    MCP2518_TXCODE_FIFO_CH4,
+    MCP2518_TXCODE_FIFO_CH5,
+    MCP2518_TXCODE_FIFO_CH6,
+    MCP2518_TXCODE_FIFO_CH7,
+    MCP2518_TXCODE_FIFO_CH8,
+    MCP2518_TXCODE_FIFO_CH9,
+    MCP2518_TXCODE_FIFO_CH10,
+    MCP2518_TXCODE_FIFO_CH11,
+    MCP2518_TXCODE_FIFO_CH12,
+    MCP2518_TXCODE_FIFO_CH13,
+    MCP2518_TXCODE_FIFO_CH14,
+    MCP2518_TXCODE_FIFO_CH15,
+    MCP2518_TXCODE_FIFO_CH16,
+    MCP2518_TXCODE_FIFO_CH17,
+    MCP2518_TXCODE_FIFO_CH18,
+    MCP2518_TXCODE_FIFO_CH19,
+    MCP2518_TXCODE_FIFO_CH20,
+    MCP2518_TXCODE_FIFO_CH21,
+    MCP2518_TXCODE_FIFO_CH22,
+    MCP2518_TXCODE_FIFO_CH23,
+    MCP2518_TXCODE_FIFO_CH24,
+    MCP2518_TXCODE_FIFO_CH25,
+    MCP2518_TXCODE_FIFO_CH26,
+    MCP2518_TXCODE_FIFO_CH27,
+    MCP2518_TXCODE_FIFO_CH28,
+    MCP2518_TXCODE_FIFO_CH29,
+    MCP2518_TXCODE_FIFO_CH30,
+    MCP2518_TXCODE_FIFO_CH31,
+    MCP2518_TXCODE_TOTAL_CHANNELS,
+    MCP2518_TXCODE_NO_INT = 0x40,
+    MCP2518_TXCODE_RESERVED
+} MCP2518_TXCODE_e;
+
+//! System Clock Selection
+
+typedef enum {
+    MCP2518_SYSCLK_40M,
+    MCP2518_SYSCLK_20M,
+    MCP2518_SYSCLK_10M
+} MCP2518_SYSCLK_SPEED_e;
+
+//! CLKO Divide
+
+typedef enum {
+    MCP2518_OSC_CLKO_DIV1,
+    MCP2518_OSC_CLKO_DIV2,
+    MCP2518_OSC_CLKO_DIV4,
+    MCP2518_OSC_CLKO_DIV10
+} MCP2518_OSC_CLKO_DIVIDE_e;
+typedef struct {
+    bool enable;
+    bool type;
+    uint32_t id;
+    uint32_t mask;
+}MCP2518_FILTER_CFG_s;
+typedef struct
+{
+    MCP2518_BITTIME_SETUP_e bitTime;
+    float sysClk;
+    uint16_t rxGpioPin;
+    bool isoMode;
+    MCP2518_SYSCLK_SPEED_e oscClk;
+    MCP2518_FILTER_CFG_s rxFilter[32];
+    uint16_t (*spiRead)(uint32_t);
+    void (*spiWrite)(uint32_t, uint16_t);
+    void (*spiCsControl)(uint32_t, bool);
+    uint32_t spiBase;
+    uint32_t (* gpioRead)(uint32_t);
+} MCP2518_CFG_s;
+/*================== Extern Constant and Variable Declarations ==============*/
+/*================== Extern Function Prototypes =============================*/
+
+
+
+
+#endif /* INCLUDE_BMODULE_DRIVER_LIB_MCP2518_MCP2518_DEFINES_H_ */
+/*================== END MODULE ==============================================*/
